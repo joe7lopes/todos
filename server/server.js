@@ -13,9 +13,6 @@ app.get('/todos', (req, res) => {
 });
 
 app.post('/todos', (req, res) => {
-
-    console.log("request body",req.body);
-
     const todo = new Todo({
         text: req.body.text
     });
@@ -28,6 +25,11 @@ app.post('/todos', (req, res) => {
 
 });
 
+
+
+
 app.listen(3000, () => { 
     console.log("server started!")
 });
+
+module.exports = {app};
