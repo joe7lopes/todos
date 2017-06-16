@@ -1,0 +1,30 @@
+{
+  "name": "todos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joe7lopes/todos.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joe7lopes/todos/issues"
+  },
+  "homepage": "https://github.com/joe7lopes/todos#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "mongo": "^0.1.0",
+    "mongoose": "^4.10.6"
+  },
+  "devDependencies": {
+    "mocha": "^3.4.2"
+  }
+}
