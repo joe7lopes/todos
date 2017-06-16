@@ -28,15 +28,33 @@ describe('POST /todos',()=>{
                 //we can do more assertions against de DB.
                 Todo.find().then((todos)=>{
                     expect(todos.length).toBe(1);
-                    expect(todos[0]).toBe(text);
+                    expect(todos[0].text).toBe(text);
                     done();
                 }).catch((err)=>{
-                    done(e);
+                    done(err);
                 });
                 
             });
     });
 
+    it('should not create a todo with invalid data', (done) =>{
+        request(app)
+            .post('/todos')
+            .send()
+            .expect(400)
+            .end( (err,res) => {
+                if(err){
+                    return done(err)
+                }
+                // Check that no todo was created in DB
+                Todo.find().then( (todos) => {
+                    expect(todos.length).toBe(0);
+                    done();
+                }).catch( err => {
+                    done(err);
+                });
+            });
+    });
 
 });
 
