@@ -4,13 +4,33 @@ const { app } = require('./../server');
 const { Todo } = require('./../db/models/todo');
 
 
+const todos = [
+    { text: 'First test todo'},
+    { text: 'Second test todo'},
+    ]
+
 beforeEach( (done) => {
 
-    Todo.remove({}).then( () => done() );
+    Todo.remove({}).then(() => {
+        return Todo.insertMany(todos);
+    }).then(()=> done());
 
 });
 
-describe('POST /todos',()=>{
+describe('GET /todos', () => {
+
+    it('should return all the todos', (done) => {
+        request(app)
+            .get('/todos')
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todos.length).toBe(2);
+            })
+            .end(done);
+    });
+});
+
+describe('POST /todos',() => {
 
     it('should create a new Todo', (done) => {
         const text = "a new text";
@@ -26,7 +46,7 @@ describe('POST /todos',()=>{
                 }
 
                 //we can do more assertions against de DB.
-                Todo.find().then((todos)=>{
+                Todo.find({text}).then((todos)=>{
                     expect(todos.length).toBe(1);
                     expect(todos[0].text).toBe(text);
                     done();
@@ -48,7 +68,7 @@ describe('POST /todos',()=>{
                 }
                 // Check that no todo was created in DB
                 Todo.find().then( (todos) => {
-                    expect(todos.length).toBe(0);
+                    expect(todos.length).toBe(2);
                     done();
                 }).catch( err => {
                     done(err);
