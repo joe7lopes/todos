@@ -1,7 +1,8 @@
+const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const { mongoose } = require('./db/mongoose');
-const { ObjectID } = require('mongoose');
+const { ObjectID } = require('mongodb');
 const { Todo } = require('./db/models/todo');
 const { User } = require('./db/models/user');
 
@@ -13,6 +14,23 @@ app.get('/todos', (req, res) => {
     Todo.find().then((todos) => {
         res.send({todos});
     }).catch((err) => {
+        res.status(400).send(err);
+    });
+});
+
+app.get('/todos/:id', (req, res) => {
+    const id = req.params.id;
+    
+    if(!ObjectID.isValid(id)){
+        return res.status(404).send();
+    }
+
+    Todo.findById(id).then((todo) => {
+        if(!todo){
+            res.status(404).send();
+        }
+        res.send({todo})
+    }).catch(err =>{
         res.status(400).send(err);
     });
 });
@@ -31,12 +49,49 @@ app.post('/todos', (req, res) => {
 });
 
 app.delete('/todos/:id', (req,res) => {
-    const idParam = req.params.id
-    const id = new ObjectID(idParam);
+    const id = req.params.id
+    
+    if(!ObjectID.isValid(id)){
+        return res.send(404);
+    }
+
+    Todo.findByIdAndRemove(id).then((todo) => {
+        if(!todo){
+             res.status(404).send();
+        }
+        res.send();
+    }).catch( err => {
+        res.status(400).send();
+    });
     
 });
 
+app.patch('/todos/:id', (req, res) => {
+    const id = req.params.id;
+    
+    if(!ObjectID.isValid(id)){
+        return res.status(404).send();
+    }
+    var body = _.pick(req.body, ['text', 'completed']);
 
+    if(_.isBoolean(body.completed) && body.completed){
+        body.completedAt = new Date().getTime();
+    }else{
+        body.completed = false;
+        body.completedAt = null;
+    }
+    
+    Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+        if(!todo){
+            res.status(404).send();
+        }
+        res.send({todo});    
+    }).catch( err => {
+        res.status(400).send();
+    });
+
+
+});
 
 app.listen(3000, () => { 
     console.log("server started!")
