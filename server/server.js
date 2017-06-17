@@ -1,3 +1,4 @@
+require('./config/config');
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,7 +9,7 @@ const { User } = require('./db/models/user');
 
 const app = express();
 app.use(bodyParser.json());
-let PORT = process.env.PORT || 3000;
+let PORT = process.env.PORT;
 
 app.get('/todos', (req, res) => {
     Todo.find().then((todos) => {
