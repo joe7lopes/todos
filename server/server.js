@@ -36,6 +36,7 @@ app.get('/todos/:id', (req, res) => {
     });
 });
 
+//POST ROUTE
 app.post('/todos', (req, res) => {
     const todo = new Todo({
         text: req.body.text
@@ -49,6 +50,21 @@ app.post('/todos', (req, res) => {
 
 });
 
+app.post('/users', (req, res) => {
+
+    var  body = _.pick(req.body,['email','password']);
+    const user = new User(body);
+
+    user.save().then(() => {
+        return user.generateAuthToken();
+    }).then( (token)=> {
+        res.header('x-auth',token).send(user);
+    }).catch((err) => {
+        res.status(400).send(e);
+    });
+});
+
+//DELETE ROUTE
 app.delete('/todos/:id', (req,res) => {
     const id = req.params.id
     
