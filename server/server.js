@@ -6,6 +6,7 @@ const { mongoose } = require('./db/mongoose');
 const { ObjectID } = require('mongodb');
 const { Todo } = require('./db/models/todo');
 const { User } = require('./db/models/user');
+const {authenticate} = require('./midleware/authenticate');
 
 const app = express();
 app.use(bodyParser.json());
@@ -62,6 +63,10 @@ app.post('/users', (req, res) => {
     }).catch((err) => {
         res.status(400).send(e);
     });
+});
+
+app.get('/users/me',authenticate,(req, res) => {
+    res.send(req.user);
 });
 
 //DELETE ROUTE
