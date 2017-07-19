@@ -4,6 +4,7 @@ const { app } = require('./../server');
 const { Todo } = require('./../db/models/todo');
 const { ObjectID } = require('mongodb');
 const {todos, populateTodos, users, populateUsers} = require('./seed/seed');
+const {User} = require('./../db/models/user');
 
 beforeEach(populateUsers);
 beforeEach(populateTodos);
@@ -187,15 +188,41 @@ describe('POST /users', () => {
                 expect(res.headers['x-auth']).toExist();
                 expect(res.body._id).toExist();
                 expect(res.body.email).toBe(email);
-            }).end(done);
+            })
+            .end(err =>{
+                if(err){
+                    return done(err);
+                }
+
+                User.findOne({email}).then(user => {
+                    expect(user).toExist();
+                    expect(user.password).toNotBe(password);
+                    done();
+                });
+
+            });
     });
 
-    it('should return validation errors if req invalid', (done) => {
+    it('should return validation errors if request invalid', (done) => {
+    request(app)
+      .post('/users')
+      .send({
+        email: 'and',
+        password: '123'
+      })
+      .expect(400)
+      .end(done);
+  });
 
-    });
-
-    it('should not create the user if email in use', (done) => {
-
-    });
+   it('should not create user if email in use', (done) => {
+    request(app)
+      .post('/users')
+      .send({
+        email: users[0].email,
+        password: 'Password123!'
+      })
+      .expect(400)
+      .end(done);
+  });
 });
 
