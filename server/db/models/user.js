@@ -5,33 +5,32 @@ const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 
 var UserSchema = new mongoose.Schema({
-    email:{
-        type: String,
-        required: true,
-        trim: true,
-        minLenght: 1,
-        unique: true,
-        validate:{ 
-            validator: validator.isEmail,
-            message: `{VALUE} is not a valid email`
-        }
+  email: {
+    type: String,
+    required: true,
+    trim: true,
+    minlength: 1,
+    unique: true,
+    validate: {
+      validator: validator.isEmail,
+      message: '{VALUE} is not a valid email'
+    }
+  },
+  password: {
+    type: String,
+    require: true,
+    minlength: 6
+  },
+  tokens: [{
+    access: {
+      type: String,
+      required: true
     },
-    password: {
-        type: String,
-        require: true,
-        minLenght: 3
-    },
-    tokens: [{
-        access: {
-            type: String,
-            required: true
-        },
-        token:{
-            type: String,
-            required: true
-        } 
-    }]
-
+    token: {
+      type: String,
+      required: true
+    }
+  }]
 });
 
 UserSchema.methods.toJSON = function () {
@@ -53,13 +52,14 @@ UserSchema.methods.generateAuthToken = function () {
   });
 };
 
-UserSchema.methods.removeToken = function(token){
+UserSchema.methods.removeToken = function (token) {
   var user = this;
-  return  user.update({
-            $pull:{
-              tokens: {token}
-            }
-          });
+
+  return user.update({
+    $pull: {
+      tokens: {token}
+    }
+  });
 };
 
 UserSchema.statics.findByToken = function (token) {
